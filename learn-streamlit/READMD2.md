@@ -1337,6 +1337,657 @@ streamlit run bmi_calculator.py
 
 ---
 
+## 📘 Project 1: CSV Data Viewer App
+
+### 🎯 What You’ll Learn
+- Let user upload a CSV file
+- Show data and basic stats
+- Make a simple data explorer
+
+---
+
+### ✅ Step 1: Create the File
+
+Create a new file called `csv_viewer.py`
+
+👉 Copy and paste this code:
+
+```python
+import streamlit as st
+import pandas as pd
+
+st.title("📂 CSV Data Viewer")
+
+# Upload CSV file
+uploaded = st.file_uploader("Upload your CSV file", type=["csv"])
+
+if uploaded:
+    # Read the file
+    df = pd.read_csv(uploaded)
+    
+    # Show data
+    st.subheader("Data Preview")
+    st.dataframe(df.head(10))  # Show first 10 rows
+    
+    # Show basic info
+    st.subheader("Basic Info")
+    st.write(f"Total Rows: {df.shape[0]}")
+    st.write(f"Total Columns: {df.shape[1]}")
+    st.write("Column Names:", list(df.columns))
+    
+    # Show data types
+    st.subheader("Data Types")
+    st.write(df.dtypes)
+    
+    # Show chart (if numeric columns exist)
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    if len(numeric_cols) > 0:
+        st.subheader("Chart of First Numeric Column")
+        st.line_chart(df[numeric_cols[0]].head(20))
+    else:
+        st.info("No numeric data to chart.")
+```
+
+---
+
+### ✅ Step 2: Run the App
+
+Run this command in your terminal:
+```bash
+streamlit run csv_viewer.py
+```
+
+✅ How to test:
+1. Find any CSV file (e.g., Excel saved as `.csv`)
+2. Or create one: `data.csv`
+   ```
+   Name,Age,Score
+   Alice,24,85
+   Bob,30,92
+   Charlie,28,78
+   ```
+3. Upload it in the app
+
+✅ You should see:
+- Table preview
+- Row/column count
+- Data types
+- A line chart (if numbers exist)
+
+---
+
+## 📘 Project 2: Simple To-Do List App
+
+### 🎯 What You’ll Learn
+- Save user input using `st.session_state`
+- Add and clear tasks
+
+---
+
+### ✅ Step 1: Create the File
+
+Create a new file called `todo_app.py`
+
+👉 Copy and paste this code:
+
+```python
+import streamlit as st
+
+st.title("📝 Simple To-Do List")
+
+# Initialize session state for tasks
+if "tasks" not in st.session_state:
+    st.session_state.tasks = []
+
+# Input to add new task
+new_task = st.text_input("Add a new task:")
+
+if st.button("Add Task") and new_task:
+    st.session_state.tasks.append(new_task)
+    st.success(f"Task added: {new_task}")
+
+# Show all tasks
+if st.session_state.tasks:
+    st.subheader("Your Tasks")
+    for i, task in enumerate(st.session_state.tasks):
+        st.write(f"{i+1}. {task}")
+else:
+    st.info("No tasks yet. Add one above!")
+
+# Clear all tasks
+if st.button("Clear All Tasks"):
+    st.session_state.tasks = []
+    st.warning("All tasks cleared!")
+```
+
+---
+
+### ✅ Step 2: Run the App
+
+Run this command:
+```bash
+streamlit run todo_app.py
+```
+
+✅ Try:
+- Type a task and click "Add Task"
+- See it appear in the list
+- Click "Clear All" to reset
+
+✅ This app **remembers** your tasks even after adding new ones!
+
+---
+
+## 📘 Project 3: Quiz App (Yes/No Questions)
+
+### 🎯 What You’ll Learn
+- Use radio buttons for choices
+- Track score
+- Show final result
+
+---
+
+### ✅ Step 1: Create the File
+
+Create a new file called `quiz_app.py`
+
+👉 Copy and paste this code:
+
+```python
+import streamlit as st
+
+st.title("🧠 Simple Quiz App")
+
+# Questions and answers
+questions = [
+    {
+        "q": "Is Python a programming language?",
+        "options": ["Yes", "No"],
+        "correct": "Yes"
+    },
+    {
+        "q": "Does Streamlit need HTML?",
+        "options": ["Yes", "No"],
+        "correct": "No"
+    },
+    {
+        "q": "Can you deploy Streamlit for free?",
+        "options": ["Yes", "No"],
+        "correct": "Yes"
+    }
+]
+
+# Start quiz
+st.write("Answer the questions below:")
+
+score = 0
+
+for i, qa in enumerate(questions):
+    st.subheader(f"Question {i+1}: {qa['q']}")
+    answer = st.radio(f"Choose:", qa["options"], key=f"q{i}")
+    
+    if answer == qa["correct"]:
+        score += 1
+
+# Show result
+if st.button("Submit Quiz"):
+    st.subheader(f"Your Score: {score} / {len(questions)}")
+    
+    if score == len(questions):
+        st.balloons()
+        st.success("🎉 Perfect! You're a Streamlit pro!")
+    elif score >= 2:
+        st.success("Good job! Keep learning.")
+    else:
+        st.warning("Keep practicing. You'll get better!")
+```
+
+---
+
+### ✅ Step 2: Run the App
+
+Run this command:
+```bash
+streamlit run quiz_app.py
+```
+
+✅ Try:
+- Answer all questions
+- Click "Submit Quiz"
+- See your score and feedback
+
+✅ Great for teaching or self-testing!
+
+---
+
+## 📘 Project 4: Temperature Converter
+
+### 🎯 What You’ll Learn
+- Convert between Celsius and Fahrenheit
+- Use `selectbox` and `number_input`
+
+---
+
+### ✅ Step 1: Create the File
+
+Create a new file called `temp_converter.py`
+
+👉 Copy and paste this code:
+
+```python
+import streamlit as st
+
+st.title("🌡️ Temperature Converter")
+
+# Choose conversion type
+conversion = st.selectbox(
+    "Convert from:",
+    ["Celsius to Fahrenheit", "Fahrenheit to Celsius"]
+)
+
+# Input temperature
+temp = st.number_input("Enter temperature:", value=0.0)
+
+# Convert
+if conversion == "Celsius to Fahrenheit":
+    result = (temp * 9/5) + 32
+    st.write(f"**{temp}°C = {result:.1f}°F**")
+else:
+    result = (temp - 32) * 5/9
+    st.write(f"**{temp}°F = {result:.1f}°C**")
+
+# Add a fun message
+if temp > 100:
+    st.warning("That's boiling hot!")
+elif temp < 0:
+    st.info("Below freezing!")
+```
+
+---
+
+### ✅ Step 2: Run the App
+
+Run this command:
+```bash
+streamlit run temp_converter.py
+```
+
+✅ Try:
+- Enter 0°C → should give 32°F
+- Enter 100°C → should give 180°F
+- See fun messages at extremes
+
+---
+
+## 📘 Project 5: Feedback Form App
+
+### 🎯 What You’ll Learn
+- Build a form with multiple inputs
+- Collect and display feedback
+
+---
+
+### ✅ Step 1: Create the File
+
+Create a new file called `feedback_form.py`
+
+👉 Copy and paste this code:
+
+```python
+import streamlit as st
+
+st.title("📬 Feedback Form")
+
+with st.form("feedback_form"):
+    name = st.text_input("Your Name")
+    rating = st.slider("Rate us (1-5)", 1, 5, 3)
+    comments = st.text_area("Your Comments")
+    submitted = st.form_submit_button("Submit")
+
+if submitted:
+    st.success("Thank you for your feedback!")
+    st.write(f"**Name:** {name}")
+    st.write(f"**Rating:** {rating} ⭐")
+    st.write(f"**Comments:** {comments}")
+```
+
+---
+
+### ✅ Step 2: Run the App
+
+Run this command:
+```bash
+streamlit run feedback_form.py
+```
+
+✅ Try:
+- Fill out the form
+- Click "Submit"
+- See your feedback displayed
+
+✅ Perfect for surveys or class projects!
+
+---
+
+## 📦 Summary: 5 New Apps You Built
+
+| App | Skills Used |
+|-----|-------------|
+| `csv_viewer.py` | File upload, pandas, charts |
+| `todo_app.py` | Session state, list management |
+| `quiz_app.py` | Loops, scoring, radio buttons |
+| `temp_converter.py` | Math, selectbox, conditions |
+| `feedback_form.py` | Forms, text area, feedback display |
+
+---
+
+## 🚀 What’s Next?
+
+Now that you can build real apps:
+
+### 1. **Customize These Apps**
+- Change colors (use `st.success`, `st.warning`)
+- Add your logo: `st.image("logo.jpg")`
+- Save data to file (advanced)
+
+### 2. **Combine Features**
+- Add a to-do list inside a sidebar
+- Let user upload CSV and chart it
+- Build a dashboard with tabs
+
+### 3. **Deploy for Free**
+Go to: [https://share.streamlit.io/](https://share.streamlit.io/)  
+Connect your GitHub and deploy any app in 2 minutes.
+
+---
+
+## 🙏 Final Words
+
+> You started with `print("Hello")`.  
+> Now you’re building **real apps** that solve problems.
+
+🎯 Keep going:
+- Teach a friend
+- Build an app for your school/work
+- Share on social media
+
+✅ **You are now a Streamlit developer.**
+
+🚀 The only next step is to **keep building**.
+
+---
+
+# 🚶‍♂️ Next Topic: **Build a Personal Portfolio App**  
+
+> 🎯 This is a **real-world project** that combines everything you've learned.  
+> You’ll build a **personal portfolio website** — like a mini LinkedIn or resume site.  
+> Perfect for students, freelancers, or job seekers.
+
+---
+
+## 🎯 What You’ll Learn
+- Use tabs to organize content
+- Show images, text, and links
+- Add contact form
+- Deploy it online (free)
+
+✅ No HTML/CSS needed. Just Python + Streamlit.
+
+---
+
+## 📁 Folder Setup (Keep It Clean)
+
+Create a folder called `my_portfolio/` and inside:
+```
+my_portfolio/
+├── app.py           ← Your main app
+├── profile.jpg      ← Your photo (download any if you don’t have)
+```
+
+👉 You can download a sample image here:  
+[https://picsum.photos/400/500](https://picsum.photos/400/500) → Right-click → Save as `profile.jpg`
+
+---
+
+## ✅ Step 1: Create the File
+
+Create a file called `app.py` inside the `my_portfolio` folder.
+
+👉 Copy and paste this full code:
+
+```python
+import streamlit as st
+
+# Page config
+st.set_page_config(
+    page_title="My Portfolio",
+    page_icon="👨‍💻",
+    layout="centered"
+)
+
+# Title & Profile
+st.title("👨‍💻 My Portfolio")
+st.subheader("Hi, I'm Alice!")
+st.write("A passionate learner and future developer.")
+
+# Profile Image
+st.image("profile.jpg", width=200, caption="That's me!")
+
+# Info Section
+st.write("---")  # Line divider
+st.subheader("About Me")
+st.write("""
+I am a student from Bangladesh.  
+I love coding, data science, and building small apps.  
+Currently learning Streamlit to create interactive projects.
+""")
+
+# Skills
+st.subheader("Skills")
+skills = ["Python", "Streamlit", "Pandas", "Data Analysis", "Basic ML"]
+for skill in skills:
+    st.markdown(f"- {skill}")
+
+# Projects
+st.write("---")
+st.subheader("Projects")
+projects = [
+    {"name": "CSV Viewer", "desc": "Upload and view CSV files"},
+    {"name": "To-Do List", "desc": "Simple task manager with session state"},
+    {"name": "Quiz App", "desc": "Interactive quiz with scoring"}
+]
+for proj in projects:
+    st.write(f"**{proj['name']}**: {proj['desc']}")
+
+# Contact Form
+st.write("---")
+st.subheader("Contact Me")
+
+with st.form("contact_form"):
+    name = st.text_input("Your Name")
+    email = st.text_input("Your Email")
+    message = st.text_area("Your Message")
+    submitted = st.form_submit_button("Send Message")
+
+if submitted:
+    st.success("Thank you! I'll get back to you soon.")
+    # In real app, you'd send email (advanced)
+    st.write(f"Name: {name}")
+    st.write(f"Email: {email}")
+    st.write(f"Message: {message}")
+
+# Footer
+st.write("---")
+st.write("🔗 Find me on: [GitHub](https://github.com/yourusername) | [LinkedIn](https://linkedin.com/in/yourprofile)")
+st.write("📧 Email: you@example.com")
+st.write("Built with ❤️ using Streamlit")
+```
+
+---
+
+## ✅ Step 2: Run the App
+
+Open your terminal, go to the `my_portfolio` folder, and run:
+
+```bash
+streamlit run app.py
+```
+
+✅ You should see:
+- Your photo
+- About section
+- Skills and projects
+- Contact form
+- Links at the bottom
+
+> 🔁 Press `Ctrl + C` in terminal to stop the app
+
+---
+
+## 🔍 Code Breakdown (Simple Explanation)
+
+| Part | What It Does |
+|------|--------------|
+| `st.set_page_config()` | Sets tab title, icon, and layout |
+| `st.image()` | Shows your photo |
+| `st.write("---")` | Draws a horizontal line |
+| `for skill in skills:` | Loops through list and shows each item |
+| `with st.form()` | Groups inputs and adds a submit button |
+| `[GitHub](link)` | Makes clickable link (Markdown syntax) |
+
+💡 This app uses:
+- Text display
+- Images
+- Lists
+- Forms
+- Links
+- Clean layout
+
+---
+
+## 🛠️ How to Customize It (Easy Edits)
+
+### 1. Change Your Info
+Find:
+```python
+st.subheader("Hi, I'm Alice!")
+```
+Replace with:
+```python
+st.subheader("Hi, I'm [Your Name]!")
+```
+
+### 2. Add Your Photo
+Save your photo as `profile.jpg` in the same folder.
+
+Or change the filename:
+```python
+st.image("my_photo.jpg", width=200, caption="Me")
+```
+
+### 3. Add More Sections
+Want an "Education" section? Add:
+
+```python
+st.write("---")
+st.subheader("Education")
+st.write("""
+- BSc in Computer Science – XYZ University (2024)
+- High School – ABC School (2020)
+""")
+```
+
+### 4. Add Social Icons
+Replace the links with your real profiles:
+
+```python
+st.write("🔗 Find me on: [GitHub](https://github.com/yourname) | [Twitter](https://twitter.com/yourhandle)")
+```
+
+---
+
+## 🚀 Bonus: Add a Download Button for Resume
+
+If you have a resume file (`resume.pdf`), add this:
+
+```python
+# Download Resume
+with open("resume.pdf", "rb") as f:
+    st.download_button(
+        label="📄 Download My Resume",
+        data=f,
+        file_name="my_resume.pdf",
+        mime="application/pdf"
+    )
+```
+
+✅ Make sure `resume.pdf` is in the same folder.
+
+Now users can download your resume!
+
+---
+
+## 🌐 How to Deploy This App for Free
+
+Want to share your portfolio with the world?
+
+### Step 1: Go to [Streamlit Community Cloud](https://share.streamlit.io/)
+1. Sign in with GitHub
+2. Click "New App"
+3. Connect your GitHub repo
+4. Upload these files:
+   - `app.py`
+   - `profile.jpg`
+   - `requirements.txt` (see below)
+
+### Step 2: Create `requirements.txt`
+
+Create a file called `requirements.txt`:
+```txt
+streamlit==1.29.0
+pandas==2.1.0
+```
+
+This tells Streamlit what to install.
+
+✅ In 2 minutes, your app will be live at a link like:  
+👉 `https://yourname.streamlit.app`
+
+---
+
+## 📦 Final Folder Structure
+
+```
+my_portfolio/
+├── app.py
+├── profile.jpg
+├── resume.pdf        ← optional
+└── requirements.txt
+```
+
+---
+
+## 🙏 Final Words
+
+> You just built a **real portfolio website** — no web developer needed.
+
+🎯 This app can:
+- Show your skills
+- Display your projects
+- Let people contact you
+- Be shared in job applications
+
+✅ **You are now building real tools.**
+
+🚀 The next step?  
+**Deploy it. Share it. Be proud.**
+
+---
+
+
+
+
+---
 
 🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
 
